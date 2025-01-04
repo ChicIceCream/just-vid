@@ -134,5 +134,5 @@ enet_model.eval()
 
 # Run the video processing
 input_video_path = "output2.mp4"
-output_video_path = "lane_vid_sahil_bhaiya_output1.avi"
+output_video_path = "lane_vid_output.avi"
 process_and_save_video(input_video_path, output_video_path, enet_model)
