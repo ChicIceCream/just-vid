@@ -5,13 +5,9 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.cluster import DBSCAN
 import torch
 import torch.nn as nn
 from torch.nn.modules.loss import _Loss
-from torch.autograd import Variable
-import tqdm
-
 
 class LaneDataset(torch.utils.data.Dataset):
     def __init__(self, dataset_path="E:/TuSimple/train_set", train=True, size=(512, 256)):
