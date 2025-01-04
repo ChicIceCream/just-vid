@@ -46,6 +46,9 @@ def process_and_display_video(input_video_path, model):
             print("End of video or cannot fetch frame.")
             break
 
+        # Show raw frames first
+        cv2.imshow("Raw Frame", frame)
+
         # Apply ROI mask
         mask = np.zeros_like(frame[:, :, 0])
         cv2.fillPoly(mask, roi_vertices, 255)
