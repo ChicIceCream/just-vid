@@ -138,7 +138,7 @@ model_path = 'ENET.pth'
 enet_model = ENet(2, 4)  # (2,8) for enet_now_model
 
 # Load the trained model's weights
-enet_model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'),weights_only=False))
+enet_model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
 enet_model.eval()
 
 input_video_path = "ehh\\output.avi"
