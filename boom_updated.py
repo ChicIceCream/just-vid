@@ -3,10 +3,9 @@ import numpy as np
 import torch
 from scipy.signal import savgol_filter
 from lane_detector import ENet  # Assuming you have a custom ENet class
-import time
 
 # Parameters for smoothing
-window_length = 5  # Must be odd, adjust as needed
+window_length = 5  # Must be odd
 polyorder = 2      # Should be less than window_length
 
 # Function to apply smoothing and outlier detection
@@ -19,8 +18,8 @@ def smooth_and_filter_detections(left_lane_positions, right_lane_positions):
         right_lane_smoothed = np.array(right_lane_positions)
     return left_lane_smoothed[-1], right_lane_smoothed[-1]
 
-# Function to process video and save lane-detected output
-def process_and_save_video(input_video_path, output_video_path, model):
+# Function to process video and display lane-detected output
+def process_and_display_video(input_video_path, model):
     cap = cv2.VideoCapture(input_video_path)
     if not cap.isOpened():
         print("Error: Unable to open video file!")
@@ -28,7 +27,6 @@ def process_and_save_video(input_video_path, output_video_path, model):
 
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    out = cv2.VideoWriter(output_video_path, cv2.VideoWriter_fourcc(*'XVID'), 10, (frame_width, frame_height))
 
     # Define ROI vertices
     roi_vertices = np.array([[(50, frame_height),  # bottom left
@@ -38,7 +36,6 @@ def process_and_save_video(input_video_path, output_video_path, model):
                             dtype=np.int32)
     vehicle_center_x = frame_width // 2 + 10
     target_y = 400  # Y-coordinate for lane point detection
-    frame_now = 1
     left_lane_positions = []
     right_lane_positions = []
 
@@ -48,9 +45,6 @@ def process_and_save_video(input_video_path, output_video_path, model):
         if not ret:
             print("End of video or cannot fetch frame.")
             break
-
-        print(f"Processing Frame: {frame_now}")
-        frame_now += 1
 
         # Apply ROI mask
         mask = np.zeros_like(frame[:, :, 0])
@@ -115,14 +109,13 @@ def process_and_save_video(input_video_path, output_video_path, model):
             cv2.putText(output_image, f"Lateral Offset: {lateral_offset:.2f} meters",
                         (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
 
-            out.write(output_image)
             cv2.imshow('Lane Detection with Lateral Offset', output_image)
 
+        # Exit when 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cap.release()
-    out.release()
     cv2.destroyAllWindows()
     print("Processing completed.")
 
@@ -133,6 +126,5 @@ enet_model.load_state_dict(torch.load(model_path, map_location='cuda'))
 enet_model.eval()
 
 # Run the video processing
-input_video_path = "output.mp4"
-output_video_path = "lane_vid_sahil_bhaiya_output1.avi"
-process_and_save_video(input_video_path, output_video_path, enet_model)
+input_video_path = "output2.mp4"
+process_and_display_video(input_video_path, enet_model)
