@@ -46,9 +46,6 @@ def process_and_display_video(input_video_path, model):
             print("End of video or cannot fetch frame.")
             break
 
-        # Show raw frames first
-        cv2.imshow("Raw Frame", frame)
-
         # Apply ROI mask
         mask = np.zeros_like(frame[:, :, 0])
         cv2.fillPoly(mask, roi_vertices, 255)
@@ -58,7 +55,7 @@ def process_and_display_video(input_video_path, model):
         input_image = cv2.cvtColor(masked_frame, cv2.COLOR_BGR2GRAY)
         input_image = cv2.resize(input_image, (512, 256))
         input_image = input_image[..., None] / 255.0  # Normalize to [0, 1]
-        input_tensor = torch.from_numpy(input_image).float().permute(2, 0, 1).unsqueeze(0).to('cuda')
+        input_tensor = torch.from_numpy(input_image).float().permute(2, 0, 1).unsqueeze(0).to('cpu')
 
         # Model inference
         with torch.no_grad():
@@ -112,6 +109,7 @@ def process_and_display_video(input_video_path, model):
             cv2.putText(output_image, f"Lateral Offset: {lateral_offset:.2f} meters",
                         (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
 
+            # Display the inference frame
             cv2.imshow('Lane Detection with Lateral Offset', output_image)
 
         # Exit when 'q' is pressed
@@ -124,8 +122,8 @@ def process_and_display_video(input_video_path, model):
 
 # Load the pre-trained ENet model
 model_path = 'ENET.pth'
-enet_model = ENet(2, 4).to('cuda')  # Adjust based on your ENet initialization
-enet_model.load_state_dict(torch.load(model_path, map_location='cuda'))
+enet_model = ENet(2, 4).to('cpu')  # Adjust based on your ENet initialization
+enet_model.load_state_dict(torch.load(model_path, map_location='cpu'))
 enet_model.eval()
 
 # Run the video processing
